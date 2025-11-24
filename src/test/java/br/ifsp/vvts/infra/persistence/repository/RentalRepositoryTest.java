@@ -40,7 +40,11 @@ public class RentalRepositoryTest {
 
         carRepository.save(testCar);
 
-        testCustomer = new CustomerEntity();
+        testCustomer = new CustomerEntity(
+                null,
+                "Costumer Test",
+                new CPFEmbeddable("111.111.111.11")
+        );
 
         customerRepository.save(testCustomer);
 
