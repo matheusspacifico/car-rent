@@ -136,7 +136,7 @@ public class CustomerControllerIntegrationTest extends BaseApiIntegrationTest {
     @DisplayName("Should return 401 or 403 when find customer without token")
     void shouldReturn403WhenFindCustomerWithoutToken() {
         given()
-        .when().get("/api/v1/customers/{cpf}", "11122000000")
+                .when().get("/api/v1/customers/{cpf}", "11122000000")
                 .then()
                 .statusCode(is(oneOf(401, 403)));
     }
@@ -167,5 +167,26 @@ public class CustomerControllerIntegrationTest extends BaseApiIntegrationTest {
                 .body("name", equalTo("John JavaScript"));
     }
 
+    @Test
+    @DisplayName("Should return 204 when delete customer")
+    void shouldReturn204WhenDeleteCustomer() {
+        String token = setupAuth();
 
+        CreateCustomerRequest request = new CreateCustomerRequest("Betinha da silva", MOCK_CPF);
+
+        given().header("Authorization", "Bearer " + token)
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when().post("/api/v1/customers")
+                .then()
+                .statusCode(201)
+                .body("name", equalTo("Betinha da silva"));
+
+        given().header("Authorization", "Bearer " + token)
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when().delete("/api/v1/customers/{cpf}", MOCK_CPF)
+                .then()
+                .statusCode(204);
+    }
 }
