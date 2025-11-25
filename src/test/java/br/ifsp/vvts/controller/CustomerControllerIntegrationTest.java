@@ -131,4 +131,13 @@ public class CustomerControllerIntegrationTest extends BaseApiIntegrationTest {
                 .then()
                 .statusCode(404);
     }
+
+    @Test
+    @DisplayName("Should return 401 or 403 when find customer without token")
+    void shouldReturn403WhenFindCustomerWithoutToken() {
+        given()
+        .when().get("/api/v1/customers/{cpf}", "11122000000")
+                .then()
+                .statusCode(is(oneOf(401, 403)));
+    }
 }
