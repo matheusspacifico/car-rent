@@ -14,7 +14,7 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 
 @Tag("Integration")
-public class CustomerControllerIntegrationTest extends BaseApiIntegrationTest{
+public class CustomerControllerIntegrationTest extends BaseApiIntegrationTest {
 
     @Autowired
     private CustomerRepository customerRepository;
@@ -22,13 +22,13 @@ public class CustomerControllerIntegrationTest extends BaseApiIntegrationTest{
     private final String MOCK_CPF = "16396650800";
 
     @AfterEach
-    void tearDown(){
+    void tearDown() {
         customerRepository.deleteAll();
     }
 
     private final String MOCK_PASSWORD = "senhamuitoforte";
 
-    private String setupAuth(){
+    private String setupAuth() {
         User user = registerUser(MOCK_PASSWORD);
         return authenticate(user.getEmail(), MOCK_PASSWORD);
     }
@@ -46,6 +46,20 @@ public class CustomerControllerIntegrationTest extends BaseApiIntegrationTest{
                 .then()
                 .statusCode(201)
                 .body("name", equalTo("John JavaScript"));
-
     }
+
+    @Test
+    @DisplayName("Should return 403 or 401 when creating customer without token")
+    void shouldReturn403WhenCreatingCustomerWithoutToken() {
+        CreateCustomerRequest request = new CreateCustomerRequest("Vasco da Gama", MOCK_CPF);
+
+        given()
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when().post("/api/v1/customers")
+                .then()
+                .statusCode(is(oneOf(401, 403)));
+    }
+
+
 }
