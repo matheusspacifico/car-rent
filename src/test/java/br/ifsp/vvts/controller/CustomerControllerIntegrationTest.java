@@ -140,4 +140,32 @@ public class CustomerControllerIntegrationTest extends BaseApiIntegrationTest {
                 .then()
                 .statusCode(is(oneOf(401, 403)));
     }
+
+    @Test
+    @DisplayName("Should return 200 when update customer information")
+    void shouldReturn200WhenUpdateCustomerInformation() {
+        String token = setupAuth();
+
+        CreateCustomerRequest request = new CreateCustomerRequest("Betinha da silva", MOCK_CPF);
+
+        given().header("Authorization", "Bearer " + token)
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when().post("/api/v1/customers")
+                .then()
+                .statusCode(201)
+                .body("name", equalTo("Betinha da silva"));
+
+        CreateCustomerRequest request2 = new CreateCustomerRequest("John JavaScript", MOCK_CPF);
+
+        given().header("Authorization", "Bearer " + token)
+                .contentType(ContentType.JSON)
+                .body(request2)
+                .when().put("/api/v1/customers/{cpf}", MOCK_CPF)
+                .then()
+                .statusCode(200)
+                .body("name", equalTo("John JavaScript"));
+    }
+
+
 }
