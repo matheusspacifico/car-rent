@@ -89,4 +89,13 @@ public class CustomerControllerIntegrationTest extends BaseApiIntegrationTest {
                 .body("$", hasSize(2))
                 .body("name", hasItems("Alfa", "Betinha"));
     }
+
+    @Test
+    @DisplayName("Shoudl return 401 or 403 when listing customers token is missing")
+    void shouldReturn403WhenListingCustomersTokenMissing() {
+        given()
+                .when().get("/api/v1/customers")
+                .then()
+                .statusCode(is(oneOf(401, 403)));
+    }
 }
