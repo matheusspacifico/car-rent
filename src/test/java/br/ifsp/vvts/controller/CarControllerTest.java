@@ -157,4 +157,73 @@ class CarControllerTest extends BaseApiIntegrationTest {
                 .then()
                 .statusCode(404);
     }
+
+    @Test
+    @DisplayName("Should find specific car by license plate successfully")
+    void shouldFindCarByLicensePlate() {
+        // GIVEN
+        CarEntity car = EntityBuilder.createRandomCar();
+        carRepository.save(car);
+        String plate = car.getLicensePlate().getValue();
+
+        String password = "123";
+        User user = registerUser(password);
+        String token = authenticate(user.getUsername(), password);
+
+        // WHEN / THEN
+        given()
+                .header("Authorization", "Bearer " + token)
+                .contentType("application/json")
+                .when()
+                .get("/api/v1/cars/{plate}", plate)
+                .then()
+                .statusCode(200)
+                .body("licensePlate", equalTo(plate))
+                .body("model", equalTo(car.getModel()))
+                .body("brand", equalTo(car.getBrand()));
+    }
+
+    @Test
+    @DisplayName("Should return 404 when updating a non-existent car")
+    void shouldReturnNotFoundWhenUpdatingNonExistentCar() {
+        // GIVEN
+        String password = "123";
+        User user = registerUser(password);
+        String token = authenticate(user.getUsername(), password);
+
+        String nonExistentPlate = "ZZZ9Z99";
+
+        UpdateCarRequest updateRequest = new UpdateCarRequest(
+                "GhostBrand", "GhostModel", 500.00
+        );
+
+        // WHEN / THEN
+        given()
+                .header("Authorization", "Bearer " + token)
+                .contentType("application/json")
+                .body(updateRequest)
+                .when()
+                .put("/api/v1/cars/{plate}", nonExistentPlate)
+                .then()
+                .statusCode(404);
+    }
+
+    @Test
+    @DisplayName("Should return 404 when deleting a non-existent car")
+    void shouldReturnNotFoundWhenDeletingNonExistentCar() {
+        // GIVEN
+        String password = "123";
+        User user = registerUser(password);
+        String token = authenticate(user.getUsername(), password);
+
+        String nonExistentPlate = "ZZZ9Z99";
+
+        // WHEN / THEN
+        given()
+                .header("Authorization", "Bearer " + token)
+                .when()
+                .delete("/api/v1/cars/{plate}", nonExistentPlate)
+                .then()
+                .statusCode(404);
+    }
 }
