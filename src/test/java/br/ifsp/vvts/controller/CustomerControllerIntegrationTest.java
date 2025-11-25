@@ -98,4 +98,26 @@ public class CustomerControllerIntegrationTest extends BaseApiIntegrationTest {
                 .then()
                 .statusCode(is(oneOf(401, 403)));
     }
+
+    @Test
+    @DisplayName("Should return 200 when found customer using CPF id")
+    void shouldReturn200WhenFoundCustomerUsingCPFId() {
+        String token = setupAuth();
+
+        CreateCustomerRequest request = new CreateCustomerRequest("Agostinho Carrara", MOCK_CPF);
+
+        given().header("Authorization", "Bearer " + token)
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when().post("/api/v1/customers")
+                .then()
+                .statusCode(201)
+                .body("name", equalTo("Agostinho Carrara"));
+
+        given().header("Authorization", "Bearer " + token)
+                .when().get("/api/v1/customers/{cpf}", MOCK_CPF)
+                .then()
+                .statusCode(200)
+                .body("name", equalTo("Agostinho Carrara"));
+    }
 }
