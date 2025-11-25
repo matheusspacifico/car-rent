@@ -189,4 +189,27 @@ public class CustomerControllerIntegrationTest extends BaseApiIntegrationTest {
                 .then()
                 .statusCode(204);
     }
+
+    @Test
+    @DisplayName("Should return 404 when delete customer")
+    void shouldReturn404WhenDeleteCustomer() {
+        String token = setupAuth();
+
+        CreateCustomerRequest request = new CreateCustomerRequest("Betinha da silva", MOCK_CPF);
+
+        given().header("Authorization", "Bearer " + token)
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when().post("/api/v1/customers")
+                .then()
+                .statusCode(201)
+                .body("name", equalTo("Betinha da silva"));
+
+        given().header("Authorization", "Bearer " + token)
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when().delete("/api/v1/customers/{cpf}", MOCK_CPF2)
+                .then()
+                .statusCode(404);
+    }
 }
