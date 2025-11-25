@@ -1,5 +1,6 @@
 package br.ifsp.vvts.controller;
 
+import br.ifsp.vvts.controller.BaseApiIntegrationTest;
 import br.ifsp.vvts.domain.dto.CreateCarRequest;
 import br.ifsp.vvts.domain.dto.UpdateCarRequest;
 import br.ifsp.vvts.infra.persistence.entity.car.CarEntity;
@@ -51,12 +52,12 @@ class CarControllerTest extends BaseApiIntegrationTest {
                 .log().ifValidationFails(LogDetail.BODY)
                 .statusCode(201)
                 .header("Location", containsString("/api/v1/cars/ABC1D23"))
-                .body("licensePlate.value", equalTo("ABC1D23"))
+                .body("licensePlate", equalTo("ABC1D23"))
                 .body("model", equalTo("Corolla"));
     }
 
     @Test
-    @DisplayName("Should return 403 Forbidden when creating car without token")
+    @DisplayName("Should return 401 Unauthorized when creating car without token")
     void shouldReturnForbiddenWhenNotAuthenticated() {
         CreateCarRequest request = new CreateCarRequest(
                 "ABC1D23", "Toyota", "Corolla", 150.00
@@ -68,7 +69,7 @@ class CarControllerTest extends BaseApiIntegrationTest {
                 .when()
                 .post("/api/v1/cars")
                 .then()
-                .statusCode(403);
+                .statusCode(401);
     }
 
     @Test
@@ -93,7 +94,7 @@ class CarControllerTest extends BaseApiIntegrationTest {
                 .then()
                 .statusCode(200)
                 .body("size()", greaterThanOrEqualTo(2))
-                .body("licensePlate.value", hasItems(
+                .body("licensePlate", hasItems(
                         car1.getLicensePlate().getValue(),
                         car2.getLicensePlate().getValue()
                 ));
