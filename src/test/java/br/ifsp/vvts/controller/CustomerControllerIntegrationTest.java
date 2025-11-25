@@ -20,6 +20,7 @@ public class CustomerControllerIntegrationTest extends BaseApiIntegrationTest {
     private CustomerRepository customerRepository;
 
     private final String MOCK_CPF = "16396650800";
+    private final String MOCK_CPF2 = "43355468584";
 
     @AfterEach
     void tearDown() {
@@ -61,5 +62,31 @@ public class CustomerControllerIntegrationTest extends BaseApiIntegrationTest {
                 .statusCode(is(oneOf(401, 403)));
     }
 
+    @Test
+    @DisplayName("Should return 200 and list all customers")
+    void shouldReturn200AndListAllCustomers() {
+        String token = setupAuth();
 
+        CreateCustomerRequest cust1 = new CreateCustomerRequest("Alfa", MOCK_CPF);
+        CreateCustomerRequest cust2 = new CreateCustomerRequest("Betinha", MOCK_CPF2);
+
+        given().header("Authorization", "Bearer " + token)
+                .contentType(ContentType.JSON)
+                .body(cust1)
+                .when().post("/api/v1/customers")
+                .then().statusCode(201);
+
+        given().header("Authorization", "Bearer " + token)
+                .contentType(ContentType.JSON)
+                .body(cust2)
+                .when().post("/api/v1/customers")
+                .then().statusCode(201);
+
+        given().header("Authorization", "Bearer " + token)
+                .when().get("/api/v1/customers")
+                .then()
+                .statusCode(200)
+                .body("$", hasSize(2))
+                .body("name", hasItems("Alfa", "Betinha"));
+    }
 }
