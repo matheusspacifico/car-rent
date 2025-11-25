@@ -58,7 +58,7 @@ class RentalControllerTest extends BaseApiIntegrationTest {
         savedCustomer = new CustomerEntity(
                 null,
                 "Costumer Test",
-                new CPFEmbeddable("111.111.111-11")
+                new CPFEmbeddable("16396650800")
         );
 
         customerRepository.save(savedCustomer);
@@ -77,7 +77,7 @@ class RentalControllerTest extends BaseApiIntegrationTest {
     void shouldCreateRentalSuccessfully() {
         CreateRentalRequest request = new CreateRentalRequest(
                 "ABC1D23",
-                "111.111.111-11",
+                "16396650800",
                 LocalDate.now().plusDays(1),
                 LocalDate.now().plusDays(5),
                 true
@@ -102,7 +102,7 @@ class RentalControllerTest extends BaseApiIntegrationTest {
     void shouldFailCreateRentalCarNotFound() {
         CreateRentalRequest request = new CreateRentalRequest(
                 "ZZZ-9999",
-                "515.891.860-01",
+                "16396650800",
                 LocalDate.now().plusDays(1),
                 LocalDate.now().plusDays(5),
                 true
