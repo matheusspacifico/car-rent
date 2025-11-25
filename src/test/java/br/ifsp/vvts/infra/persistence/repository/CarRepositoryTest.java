@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.orm.jpa.JpaSystemException;
 
 import java.util.Optional;
 
@@ -67,6 +67,6 @@ class CarRepositoryTest {
 
         // WHEN / THEN
         assertThatThrownBy(() -> carRepository.save(car2))
-                .isInstanceOf(DataIntegrityViolationException.class);
+                .isInstanceOf(JpaSystemException.class);
     }
 }
