@@ -98,7 +98,7 @@ class RentalControllerTest extends BaseApiIntegrationTest {
     }
 
     @Test
-    @DisplayName("Should return 404/400 when creating rental for non-existent car")
+    @DisplayName("Should return 400 when creating rental for non-existent car")
     void shouldFailCreateRentalCarNotFound() {
         CreateRentalRequest request = new CreateRentalRequest(
                 "ZZZ-9999",
@@ -115,7 +115,7 @@ class RentalControllerTest extends BaseApiIntegrationTest {
                 .when()
                 .post("/api/v1/rentals")
                 .then()
-                .statusCode(is(oneOf(404, 400, 422)));
+                .statusCode(400);
     }
 
     @Test
