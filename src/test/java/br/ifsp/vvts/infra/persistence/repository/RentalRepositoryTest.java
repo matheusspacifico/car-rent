@@ -36,7 +36,7 @@ public class RentalRepositoryTest {
     @BeforeEach
     void setup() {
         testCar = new CarEntity();
-        testCar.setLicensePlate(new LicensePlateEmbeddable("ABC-1234"));
+        testCar.setLicensePlate(new LicensePlateEmbeddable("ABCD1234"));
 
         carRepository.save(testCar);
 
