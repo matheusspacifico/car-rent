@@ -42,4 +42,13 @@ public class CustomerRepositoryTest {
         assertThat(result).isPresent();
         assertThat(result.get().getCpf()).isEqualTo(customer.getCpf());
     }
+
+    @Test
+    @DisplayName("Should return null when not found customer by cpf id")
+    void shouldReturnEmptyForNonExistentCpf() {
+        final String cpf = "00001110000";
+        final Optional<CustomerEntity> result = sut.findByCpfNumber(cpf);
+
+        assertThat(result).isNotPresent();
+    }
 }
