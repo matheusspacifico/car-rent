@@ -45,15 +45,20 @@ class RentalControllerTest extends BaseApiIntegrationTest {
         var user = registerUser("password123");
         this.validToken = authenticate(user.getUsername(), "password123");
 
-        savedCar = new CarEntity();
-        savedCar.setLicensePlate(new LicensePlateEmbeddable("ABC-1234"));
+        savedCar = new CarEntity(
+                null,
+                new LicensePlateEmbeddable("ABC1D23"),
+                "Toyota",
+                "Corolla",
+                50000.0
+        );
 
         carRepository.save(savedCar);
 
         savedCustomer = new CustomerEntity(
                 null,
                 "Costumer Test",
-                new CPFEmbeddable("111.111.111.11")
+                new CPFEmbeddable("111.111.111-11")
         );
 
         customerRepository.save(savedCustomer);
@@ -67,4 +72,121 @@ class RentalControllerTest extends BaseApiIntegrationTest {
         super.tearDown();
     }
 
+    @Test
+    @DisplayName("Should create rental successfully and return 201 with Location")
+    void shouldCreateRentalSuccessfully() {
+        CreateRentalRequest request = new CreateRentalRequest(
+                "ABC1D23",
+                "111.111.111-11",
+                LocalDate.now().plusDays(1),
+                LocalDate.now().plusDays(5),
+                true
+        );
+
+        given()
+                .header("Authorization", "Bearer " + validToken)
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when()
+                .post("/api/v1/rentals")
+                .then()
+                .statusCode(201)
+                .header("Location", containsString("/api/v1/rentals/"))
+                .body("id", notNullValue())
+                .body("status", equalTo("ACTIVE"))
+                .body("totalPrice", notNullValue());
+    }
+
+    @Test
+    @DisplayName("Should return 404/400 when creating rental for non-existent car")
+    void shouldFailCreateRentalCarNotFound() {
+        CreateRentalRequest request = new CreateRentalRequest(
+                "ZZZ-9999",
+                "515.891.860-01",
+                LocalDate.now().plusDays(1),
+                LocalDate.now().plusDays(5),
+                true
+        );
+
+        given()
+                .header("Authorization", "Bearer " + validToken)
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when()
+                .post("/api/v1/rentals")
+                .then()
+                .statusCode(is(oneOf(404, 400, 422)));
+    }
+
+    @Test
+    @DisplayName("Should list all rentals returning 200 OK")
+    void shouldListAllRentals() {
+        RentalEntity rental = new RentalEntity(null, savedCustomer, savedCar,
+                LocalDate.now(), LocalDate.now().plusDays(2), BigDecimal.TEN, RentalStatus.ACTIVE);
+        rentalRepository.save(rental);
+
+        given()
+                .header("Authorization", "Bearer " + validToken)
+                .when()
+                .get("/api/v1/rentals")
+                .then()
+                .statusCode(200)
+                .body("$", hasSize(1))
+                .body("[0].car.licensePlate", equalTo("ABC1D23"));
+    }
+
+    @Test
+    @DisplayName("Should find rental by ID returning 200 OK")
+    void shouldFindRentalById() {
+        RentalEntity rental = new RentalEntity(null, savedCustomer, savedCar,
+                LocalDate.now(), LocalDate.now().plusDays(2), BigDecimal.TEN, RentalStatus.ACTIVE);
+        RentalEntity saved = rentalRepository.save(rental);
+
+        given()
+                .header("Authorization", "Bearer " + validToken)
+                .when()
+                .get("/api/v1/rentals/{id}", saved.getId())
+                .then()
+                .statusCode(200)
+                .body("id", equalTo(saved.getId().intValue()));
+    }
+
+    @Test
+    @DisplayName("Should return 404 when finding non-existent rental ID")
+    void shouldReturn404ForNonExistentId() {
+        given()
+                .header("Authorization", "Bearer " + validToken)
+                .when()
+                .get("/api/v1/rentals/{id}", 99999L)
+                .then()
+                .statusCode(404);
+    }
+
+    @Test
+    @DisplayName("Should delete rental and return 204 No Content")
+    void shouldDeleteRental() {
+        RentalEntity rental = new RentalEntity(null, savedCustomer, savedCar,
+                LocalDate.now(), LocalDate.now().plusDays(2), BigDecimal.TEN, RentalStatus.ACTIVE);
+        RentalEntity saved = rentalRepository.save(rental);
+
+        given()
+                .header("Authorization", "Bearer " + validToken)
+                .when()
+                .delete("/api/v1/rentals/{id}", saved.getId())
+                .then()
+                .statusCode(204);
+
+        assertThat(rentalRepository.findById(saved.getId())).isEmpty();
+    }
+
+    @Test
+    @DisplayName("Should return 404 when deleting non-existent rental")
+    void shouldReturn404WhenDeletingNonExistent() {
+        given()
+                .header("Authorization", "Bearer " + validToken)
+                .when()
+                .delete("/api/v1/rentals/{id}", 99999L)
+                .then()
+                .statusCode(404);
+    }
 }
