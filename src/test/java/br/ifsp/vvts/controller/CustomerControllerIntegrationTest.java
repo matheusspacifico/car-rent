@@ -120,4 +120,15 @@ public class CustomerControllerIntegrationTest extends BaseApiIntegrationTest {
                 .statusCode(200)
                 .body("name", equalTo("Agostinho Carrara"));
     }
+
+    @Test
+    @DisplayName("Should return 404 when customer is not found by CPF")
+    void shouldReturn404WhenCustomerIsNotFoundByCpf() {
+        String token = setupAuth();
+
+        given().header("Authorization", "Bearer " + token)
+                .when().get("/api/v1/customers/{cpf}", "98765432100")
+                .then()
+                .statusCode(404);
+    }
 }
