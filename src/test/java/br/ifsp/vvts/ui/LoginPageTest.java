@@ -77,5 +77,121 @@ class LoginPageTest extends BaseUiTest {
         }
     }
 
+    @Nested
+    @DisplayName("Invalid Input Tests")
+    class InvalidInputTests {
+
+        @Test
+        @DisplayName("Should show error for empty email")
+        void shouldShowErrorForEmptyEmail() {
+            loginPage.triggerEmailValidation();
+
+            assertThat(loginPage.isEmailRequiredErrorVisible()).isTrue();
+        }
+
+        @Test
+        @DisplayName("Should show error for invalid email format")
+        void shouldShowErrorForInvalidEmailFormat() {
+            String invalidEmail = generateInvalidEmail();
+
+            loginPage.enterEmail(invalidEmail);
+            loginPage.triggerPasswordValidation();
+
+            assertThat(loginPage.isEmailInvalidErrorVisible()).isTrue();
+        }
+
+        @Test
+        @DisplayName("Should show error for email without @ symbol")
+        void shouldShowErrorForEmailWithoutAtSymbol() {
+            loginPage.enterEmail("invalidemail.com");
+            loginPage.triggerPasswordValidation();
+
+            assertThat(loginPage.isEmailInvalidErrorVisible()).isTrue();
+        }
+
+        @Test
+        @DisplayName("Should show error for email without domain")
+        void shouldShowErrorForEmailWithoutDomain() {
+            loginPage.enterEmail("invalid@");
+            loginPage.triggerPasswordValidation();
+
+            assertThat(loginPage.isEmailInvalidErrorVisible()).isTrue();
+        }
+
+        @Test
+        @DisplayName("Should show error for empty password")
+        void shouldShowErrorForEmptyPassword() {
+            loginPage.triggerPasswordValidation();
+
+            assertThat(loginPage.isPasswordRequiredErrorVisible()).isTrue();
+        }
+
+        @Test
+        @DisplayName("Should disable submit button with only email filled")
+        void shouldDisableSubmitButtonWithOnlyEmailFilled() {
+            String validEmail = generateValidEmail();
+
+            loginPage.enterEmail(validEmail);
+
+            assertThat(loginPage.isSubmitButtonEnabled()).isFalse();
+        }
+
+        @Test
+        @DisplayName("Should disable submit button with only password filled")
+        void shouldDisableSubmitButtonWithOnlyPasswordFilled() {
+            String validPassword = generateValidPassword();
+
+            loginPage.enterPassword(validPassword);
+
+            assertThat(loginPage.isSubmitButtonEnabled()).isFalse();
+        }
+
+        @Test
+        @DisplayName("Should disable submit button with invalid email")
+        void shouldDisableSubmitButtonWithInvalidEmail() {
+            String invalidEmail = generateInvalidEmail();
+            String validPassword = generateValidPassword();
+
+            loginPage.enterEmail(invalidEmail);
+            loginPage.enterPassword(validPassword);
+
+            assertThat(loginPage.isSubmitButtonEnabled()).isFalse();
+        }
+
+        @Test
+        @DisplayName("Should show error message for wrong credentials")
+        void shouldShowErrorMessageForWrongCredentials() {
+            String email = generateValidEmail();
+            String password = generateValidPassword();
+
+            createTestUser(email, password);
+
+            loginPage.login(email, "wrongpassword123");
+
+            assertThat(loginPage.isSnackBarVisible()).isTrue();
+            assertThat(loginPage.getSnackBarMessage()).contains("Usuário ou senha inválidos");
+        }
+
+        @Test
+        @DisplayName("Should show error message for non-existent user")
+        void shouldShowErrorMessageForNonExistentUser() {
+            String email = generateValidEmail();
+            String password = generateValidPassword();
+
+            loginPage.login(email, password);
+
+            assertThat(loginPage.isSnackBarVisible()).isTrue();
+            assertThat(loginPage.getSnackBarMessage()).contains("Usuário ou senha inválidos");
+        }
+
+        @Test
+        @DisplayName("Should not submit form with empty fields")
+        void shouldNotSubmitFormWithEmptyFields() {
+            loginPage.clickSubmitButton();
+
+            assertThat(loginPage.isOnLoginPage()).isTrue();
+        }
+    }
+
 }
 
