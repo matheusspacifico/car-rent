@@ -39,5 +39,76 @@ class RegisterPageTest extends BaseUiTest {
         }
     }
 
+    @Nested
+    @DisplayName("Valid Input Tests")
+    class ValidInputTests {
+
+        @Test
+        @DisplayName("Should enable submit button with all valid fields")
+        void shouldEnableSubmitButtonWithAllValidFields() {
+            String name = generateFirstName();
+            String lastname = generateLastName();
+            String email = generateValidEmail();
+            String password = generateValidPassword();
+
+            registerPage.enterName(name);
+            registerPage.enterLastname(lastname);
+            registerPage.enterEmail(email);
+            registerPage.enterPassword(password);
+
+            assertThat(registerPage.isSubmitButtonEnabled()).isTrue();
+        }
+
+        @Test
+        @DisplayName("Should register successfully with valid data")
+        void shouldRegisterSuccessfullyWithValidData() {
+            String name = generateFirstName();
+            String lastname = generateLastName();
+            String email = generateValidEmail();
+            String password = generateValidPassword();
+
+            registerPage.register(name, lastname, email, password);
+
+            assertThat(registerPage.isSnackBarVisible()).isTrue();
+            assertThat(registerPage.getSnackBarMessage()).contains("Registro efetuado com sucesso");
+        }
+
+        @Test
+        @DisplayName("Should redirect to login page after successful registration")
+        void shouldRedirectToLoginPageAfterSuccessfulRegistration() {
+            String name = generateFirstName();
+            String lastname = generateLastName();
+            String email = generateValidEmail();
+            String password = generateValidPassword();
+
+            registerPage.register(name, lastname, email, password);
+
+            assertThat(registerPage.isRedirectedToLogin()).isTrue();
+        }
+
+        @Test
+        @DisplayName("Should navigate to login page when clicking login link")
+        void shouldNavigateToLoginPageWhenClickingLoginLink() {
+            var loginPage = registerPage.clickLoginLink();
+
+            assertThat(loginPage.isOnLoginPage()).isTrue();
+        }
+
+        @Test
+        @DisplayName("Should accept password with minimum length of 6 characters")
+        void shouldAcceptPasswordWithMinimumLength() {
+            String name = generateFirstName();
+            String lastname = generateLastName();
+            String email = generateValidEmail();
+            String password = "123456";
+
+            registerPage.enterName(name);
+            registerPage.enterLastname(lastname);
+            registerPage.enterEmail(email);
+            registerPage.enterPassword(password);
+
+            assertThat(registerPage.isSubmitButtonEnabled()).isTrue();
+        }
+    }
 }
 
