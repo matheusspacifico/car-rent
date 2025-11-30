@@ -2,6 +2,7 @@ package br.ifsp.vvts.ui;
 
 import br.ifsp.vvts.ui.pages.CarFormPage;
 import br.ifsp.vvts.ui.pages.CarsPage;
+import br.ifsp.vvts.ui.pages.DeleteCarModal;
 import org.junit.jupiter.api.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -68,5 +69,49 @@ public class CarsPageTest extends AuthenticatedBaseUiTest {
             assertThat(carsPage.checkIntegrationCarRowData(plate, brand, model, price)).isFalse();
         }
 
+        @Test
+        @DisplayName("Should edit an existing car")
+        public void shouldEditCar() {
+            String plate = faker.regexify("[A-Z]{3}[0-9][A-Z][0-9]{2}");
+            createCarForTest(plate, "OldBrand", "OldModel", "50.00");
+
+            CarFormPage form = carsPage.clickEditCarButton(plate);
+
+            assertThat(form.getFormTitle()).isEqualTo("Editar Carro");
+
+            String newBrand = "Ford";
+            String newModel = "Mustang X";
+            String newPrice = "200.00";
+            form.fillForm(plate, newBrand, newModel, newPrice);
+
+            carsPage = form.clickSubmit();
+
+            assertThat(carsPage.checkIntegrationCarRowData(plate, newBrand, newModel, newPrice)).isTrue();
+        }
+
+        @Test
+        @DisplayName("Should cancel process to edit an existing car")
+        public void shouldCancelEditCar() {
+            String plate = faker.regexify("[A-Z]{3}[0-9][A-Z][0-9]{2}");
+            createCarForTest(plate, "OldBrand", "OldModel", "50.00");
+
+            CarFormPage form = carsPage.clickEditCarButton(plate);
+
+            assertThat(form.getFormTitle()).isEqualTo("Editar Carro");
+
+            String newModel = "Subaru X";
+            String newPrice = "200.00";
+            form.fillForm(plate, "OldBrand", newModel, newPrice);
+
+            carsPage = form.clickCancel();
+
+            assertThat(carsPage.checkIntegrationCarRowData(plate, "OldBrand", newModel, newPrice)).isFalse();
+        }
+    }
+
+    private void createCarForTest(String plate, String brand, String model, String price) {
+        CarFormPage form = carsPage.clickAddCarButton();
+        form.fillForm(plate, brand, model, price);
+        carsPage = form.clickSubmit();
     }
 }
