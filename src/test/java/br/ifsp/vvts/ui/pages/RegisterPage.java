@@ -134,12 +134,5 @@ public class RegisterPage extends BasePage {
         click(passwordInput);
         click(nameInput);
     }
-
-    public void triggerAllValidations() {
-        triggerNameValidation();
-        triggerLastnameValidation();
-        triggerEmailValidation();
-        triggerPasswordValidation();
-    }
 }
 

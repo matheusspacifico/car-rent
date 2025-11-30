@@ -110,5 +110,90 @@ class RegisterPageTest extends BaseUiTest {
             assertThat(registerPage.isSubmitButtonEnabled()).isTrue();
         }
     }
+
+    @Nested
+    @DisplayName("Invalid Input Tests")
+    class InvalidInputTests {
+
+        @Test
+        @DisplayName("Should show error for empty name")
+        void shouldShowErrorForEmptyName() {
+            registerPage.triggerNameValidation();
+
+            assertThat(registerPage.isNameRequiredErrorVisible()).isTrue();
+        }
+
+        @Test
+        @DisplayName("Should show error for empty lastname")
+        void shouldShowErrorForEmptyLastname() {
+            registerPage.triggerLastnameValidation();
+
+            assertThat(registerPage.isLastnameRequiredErrorVisible()).isTrue();
+        }
+
+        @Test
+        @DisplayName("Should show error for empty email")
+        void shouldShowErrorForEmptyEmail() {
+            registerPage.triggerEmailValidation();
+
+            assertThat(registerPage.isEmailRequiredErrorVisible()).isTrue();
+        }
+
+        @Test
+        @DisplayName("Should show error for empty password")
+        void shouldShowErrorForEmptyPassword() {
+            registerPage.triggerPasswordValidation();
+
+            assertThat(registerPage.isPasswordRequiredErrorVisible()).isTrue();
+        }
+
+        @Test
+        @DisplayName("Should show error for invalid email format")
+        void shouldShowErrorForInvalidEmailFormat() {
+            String invalidEmail = generateInvalidEmail();
+
+            registerPage.enterEmail(invalidEmail);
+            registerPage.triggerPasswordValidation();
+
+            assertThat(registerPage.isEmailInvalidErrorVisible()).isTrue();
+        }
+
+        @Test
+        @DisplayName("Should show error for email without @ symbol")
+        void shouldShowErrorForEmailWithoutAtSymbol() {
+            registerPage.enterEmail("invalidemail.com");
+            registerPage.triggerPasswordValidation();
+
+            assertThat(registerPage.isEmailInvalidErrorVisible()).isTrue();
+        }
+
+        @Test
+        @DisplayName("Should show error for email without domain")
+        void shouldShowErrorForEmailWithoutDomain() {
+            registerPage.enterEmail("invalid@");
+            registerPage.triggerPasswordValidation();
+
+            assertThat(registerPage.isEmailInvalidErrorVisible()).isTrue();
+        }
+
+        @Test
+        @DisplayName("Should show error for email without local part")
+        void shouldShowErrorForEmailWithoutLocalPart() {
+            registerPage.enterEmail("@domain.com");
+            registerPage.triggerPasswordValidation();
+
+            assertThat(registerPage.isEmailInvalidErrorVisible()).isTrue();
+        }
+
+        @Test
+        @DisplayName("Should show error for email with multiple @ symbols")
+        void shouldShowErrorForEmailWithMultipleAtSymbols() {
+            registerPage.enterEmail("test@@domain.com");
+            registerPage.triggerPasswordValidation();
+
+            assertThat(registerPage.isEmailInvalidErrorVisible()).isTrue();
+        }
+    }
+
 }
 
