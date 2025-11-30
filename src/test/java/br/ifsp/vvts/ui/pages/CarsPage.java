@@ -4,8 +4,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
-import java.util.List;
-
 public class CarsPage extends BasePage {
     private final By pageTitle = By.xpath("//h2[contains(text(), 'Carros')]");
     private final By addCarButton = By.cssSelector("button[mattooltip='Adicionar Carro']");
@@ -49,16 +47,18 @@ public class CarsPage extends BasePage {
         return new CarFormPage(driver);
     }
 
-    public void clickEditCarButton(String licensePlate) {
+    public CarFormPage clickEditCarButton(String licensePlate) {
         WebElement row = getRowByLicensePlate(licensePlate);
         WebElement editButton = row.findElement(By.cssSelector("button[mattooltip='Editar']"));
         editButton.click();
+        return new CarFormPage(driver);
     }
 
-    public void clickDeleteCarButton(String licensePlate) {
+    public DeleteCarModal clickDeleteCarButton(String licensePlate) {
         WebElement row = getRowByLicensePlate(licensePlate);
         WebElement deleteButton = row.findElement(By.cssSelector("button[mattooltip='Excluir']"));
         deleteButton.click();
+        return new DeleteCarModal(driver);
     }
 
     public boolean checkIntegrationCarRowData(String licensePlate, String expectedBrand, String expectedModel, String expectedPrice) {
