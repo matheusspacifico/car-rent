@@ -107,6 +107,34 @@ public class CarsPageTest extends AuthenticatedBaseUiTest {
 
             assertThat(carsPage.checkIntegrationCarRowData(plate, "OldBrand", newModel, newPrice)).isFalse();
         }
+
+        @Test
+        @DisplayName("Should delete existing car")
+        public void shouldDeleteCar() {
+            String plate = faker.regexify("[A-Z]{3}[0-9][A-Z][0-9]{2}");
+            createCarForTest(plate, "OldBrand", "OldModel", "50.00");
+
+            DeleteCarModal modal = carsPage.clickDeleteCarButton(plate);
+
+            assertThat(modal.getConfirmationMessage()).contains("Tem certeza que deseja excluir").contains(plate);
+
+            carsPage = modal.clickConfirmButton();
+            assertThat(carsPage.isCarListed(plate)).isFalse();
+        }
+
+        @Test
+        @DisplayName("Should cancel process to delete existing car")
+        public void shouldCancelDeleteCar() {
+            String plate = faker.regexify("[A-Z]{3}[0-9][A-Z][0-9]{2}");
+            createCarForTest(plate, "OldBrand", "OldModel", "50.00");
+
+            DeleteCarModal modal = carsPage.clickDeleteCarButton(plate);
+
+            assertThat(modal.getConfirmationMessage()).contains("Tem certeza que deseja excluir").contains(plate);
+
+            carsPage = modal.clickCancelButton();
+            assertThat(carsPage.isCarListed(plate)).isTrue();
+        }
     }
 
     private void createCarForTest(String plate, String brand, String model, String price) {
@@ -115,3 +143,4 @@ public class CarsPageTest extends AuthenticatedBaseUiTest {
         carsPage = form.clickSubmit();
     }
 }
+
