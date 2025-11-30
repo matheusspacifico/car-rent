@@ -19,6 +19,10 @@ public class CustomerPage extends BasePage {
         return isElementVisible(noCustomersMessage);
     }
 
+    public boolean isAddCustomerButton() {
+        return isElementVisible(addCustomerButton);
+    }
+
     public CustomerFormPage clickAddCustomerButton() {
         click(addCustomerButton);
         return new CustomerFormPage(driver);
