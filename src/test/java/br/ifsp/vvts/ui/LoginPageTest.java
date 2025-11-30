@@ -39,5 +39,43 @@ class LoginPageTest extends BaseUiTest {
         }
     }
 
+    @Nested
+    @DisplayName("Valid Input Tests")
+    class ValidInputTests {
+
+        @Test
+        @DisplayName("Should enable submit button with valid email and password")
+        void shouldEnableSubmitButtonWithValidEmailAndPassword() {
+            String validEmail = generateValidEmail();
+            String validPassword = generateValidPassword();
+
+            loginPage.enterEmail(validEmail);
+            loginPage.enterPassword(validPassword);
+
+            assertThat(loginPage.isSubmitButtonEnabled()).isTrue();
+        }
+
+        @Test
+        @DisplayName("Should login successfully with valid credentials")
+        void shouldLoginSuccessfullyWithValidCredentials() {
+            String email = generateValidEmail();
+            String password = generateValidPassword();
+
+            createTestUser(email, password);
+
+            loginPage.login(email, password);
+
+            assertThat(loginPage.isRedirectedToRentals()).isTrue();
+        }
+
+        @Test
+        @DisplayName("Should navigate to register page when clicking register link")
+        void shouldNavigateToRegisterPageWhenClickingRegisterLink() {
+            var registerPage = loginPage.clickRegisterLink();
+
+            assertThat(registerPage.isOnRegisterPage()).isTrue();
+        }
+    }
+
 }
 
