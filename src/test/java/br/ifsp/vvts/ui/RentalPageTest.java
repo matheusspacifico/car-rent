@@ -130,4 +130,47 @@ public class RentalPageTest extends AuthenticatedBaseUiTest {
                 RentalStatus.ACTIVE
         ));
     }
+
+    @Nested
+    @DisplayName("Validation Tests")
+    class ValidationTests {
+
+        @Test
+        @DisplayName("Should disable submit button when form is empty")
+        public void shouldKeepButtonDisabled() {
+            RentalFormPage form = rentalPage.clickAddRentalButton();
+
+            assertThat(form.isSubmitButtonEnabled())
+                    .as("Botão deve estar desabilitado se o form está vazio")
+                    .isFalse();
+        }
+
+        @Test
+        @DisplayName("Should show error messages for required fields")
+        public void shouldShowRequiredErrors() {
+            RentalFormPage form = rentalPage.clickAddRentalButton();
+
+            form.touchField("cpf");
+            form.touchField("licensePlate");
+            form.touchField("startDate");
+            form.touchField("endDate");
+
+            assertThat(form.hasErrorMessage("O CPF é obrigatório")).isTrue();
+            assertThat(form.hasErrorMessage("Placa é obrigatória")).isTrue();
+            assertThat(form.hasErrorMessage("A data de retirada é obrigatória")).isTrue();
+        }
+
+        @Test
+        @DisplayName("Should cancel creation and return to list")
+        public void shouldCancelCreation() {
+            RentalFormPage form = rentalPage.clickAddRentalButton();
+
+            form.fillLicensePlate("ABC1234");
+
+            rentalPage = form.clickCancel();
+
+            assertThat(rentalPage.getPageTitle()).contains("Lista de Alugueis");
+            assertThat(rentalPage.getRentalCount()).isEqualTo(0);
+        }
+    }
 }

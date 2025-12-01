@@ -4,6 +4,9 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
+import org.openqa.selenium.WebElement;
+import java.util.List;
+
 public class RentalFormPage extends BasePage {
 
     private final By licensePlateInput = By.name("licensePlate");
@@ -60,5 +63,31 @@ public class RentalFormPage extends BasePage {
     public RentalPage clickCancel() {
         clickJS(cancelButton);
         return new RentalPage(driver);
+    }
+
+    public boolean isSubmitButtonEnabled() {
+        try {
+            WebElement btn = driver.findElement(submitButton);
+            return btn.isEnabled() && btn.getAttribute("disabled") == null;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public void touchField(String fieldName) {
+        By fieldLocator = By.name(fieldName);
+        click(fieldLocator);
+        click(By.tagName("body"));
+    }
+
+    public boolean hasErrorMessage(String text) {
+        try {
+            List<WebElement> errors = driver.findElements(By.tagName("mat-error"));
+            return errors.stream()
+                    .filter(WebElement::isDisplayed)
+                    .anyMatch(e -> e.getText().contains(text));
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

@@ -84,4 +84,12 @@ public class RentalPage extends BasePage {
         click(confirmDialogButton);
         wait.until(d -> driver.findElements(confirmDialogButton).isEmpty());
     }
+
+    public boolean isDeleteButtonEnabledInFirstRow() {
+        if (isNoRentalsMessageVisible()) return false;
+        WebElement firstRow = waitForElement(tableRows);
+        WebElement btn = firstRow.findElement(buttonDelete);
+        String classes = btn.getAttribute("class");
+        return btn.isEnabled() && !classes.contains("disabled") && !classes.contains("mat-button-disabled");
+    }
 }
