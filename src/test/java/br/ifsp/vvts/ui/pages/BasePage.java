@@ -1,6 +1,7 @@
 package br.ifsp.vvts.ui.pages;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -38,6 +39,11 @@ public abstract class BasePage {
         waitForClickable(locator).click();
     }
 
+    protected void clickJS(By locator) {
+        WebElement element = waitForElement(locator);
+        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
+    }
+
     protected String getText(By locator) {
         return waitForElement(locator).getText();
     }
@@ -72,4 +78,3 @@ public abstract class BasePage {
         return driver.getCurrentUrl();
     }
 }
-
