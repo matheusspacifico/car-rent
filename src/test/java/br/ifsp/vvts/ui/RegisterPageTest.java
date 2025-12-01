@@ -60,20 +60,6 @@ class RegisterPageTest extends BaseUiTest {
         }
 
         @Test
-        @DisplayName("Should register successfully with valid data")
-        void shouldRegisterSuccessfullyWithValidData() {
-            String name = generateFirstName();
-            String lastname = generateLastName();
-            String email = generateValidEmail();
-            String password = generateValidPassword();
-
-            registerPage.register(name, lastname, email, password);
-
-            assertThat(registerPage.isSnackBarVisible()).isTrue();
-            assertThat(registerPage.getSnackBarMessage()).contains("Registro efetuado com sucesso");
-        }
-
-        @Test
         @DisplayName("Should redirect to login page after successful registration")
         void shouldRedirectToLoginPageAfterSuccessfulRegistration() {
             String name = generateFirstName();

@@ -75,7 +75,10 @@ public abstract class BaseUiTest {
     }
 
     protected String generateValidEmail() {
-        return faker.internet().emailAddress();
+//        return faker.internet().emailAddress();
+        String username = faker.regexify("[a-z]{6,10}");
+        String domain = faker.regexify("[a-z]{5,8}");
+        return username + "@" + domain + ".com";
     }
 
     protected String generateValidPassword() {

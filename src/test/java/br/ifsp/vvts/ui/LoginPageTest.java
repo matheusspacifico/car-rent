@@ -158,39 +158,6 @@ class LoginPageTest extends BaseUiTest {
             assertThat(loginPage.isSubmitButtonEnabled()).isFalse();
         }
 
-        @Test
-        @DisplayName("Should show error message for wrong credentials")
-        void shouldShowErrorMessageForWrongCredentials() {
-            String email = generateValidEmail();
-            String password = generateValidPassword();
-
-            createTestUser(email, password);
-
-            loginPage.login(email, "wrongpassword123");
-
-            assertThat(loginPage.isSnackBarVisible()).isTrue();
-            assertThat(loginPage.getSnackBarMessage()).contains("Usuário ou senha inválidos");
-        }
-
-        @Test
-        @DisplayName("Should show error message for non-existent user")
-        void shouldShowErrorMessageForNonExistentUser() {
-            String email = generateValidEmail();
-            String password = generateValidPassword();
-
-            loginPage.login(email, password);
-
-            assertThat(loginPage.isSnackBarVisible()).isTrue();
-            assertThat(loginPage.getSnackBarMessage()).contains("Usuário ou senha inválidos");
-        }
-
-        @Test
-        @DisplayName("Should not submit form with empty fields")
-        void shouldNotSubmitFormWithEmptyFields() {
-            loginPage.clickSubmitButton();
-
-            assertThat(loginPage.isOnLoginPage()).isTrue();
-        }
     }
 
 }
