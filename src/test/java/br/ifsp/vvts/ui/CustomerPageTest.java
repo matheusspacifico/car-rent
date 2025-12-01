@@ -2,6 +2,7 @@ package br.ifsp.vvts.ui;
 
 import br.ifsp.vvts.ui.pages.CustomerFormPage;
 import br.ifsp.vvts.ui.pages.CustomerPage;
+import br.ifsp.vvts.ui.pages.DeleteCustomerModal;
 import org.junit.jupiter.api.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -98,6 +99,35 @@ public class CustomerPageTest extends AuthenticatedBaseUiTest {
 
             assertThat(customerPage.checkCustomerRowData(originalName, cpf)).isTrue();
         }
+
+        @Test
+        @DisplayName("Should delete existing customer")
+        public void shouldDeleteCustomer() {
+            String cpf = "035.056.850-20";
+            createCustomerForTest("mim remova", cpf);
+
+            DeleteCustomerModal modal = customerPage.clickDeleteCustomerButton(cpf);
+
+            assertThat(modal.getConfirmationMessage()).contains("Tem certeza que deseja excluir").contains(cpf);
+
+            customerPage = modal.clickConfirmButton();
+
+            assertThat(customerPage.isCustomerListed(cpf)).isFalse();
+        }
+
+        @Test
+        @DisplayName("Should cancel process to delete existing customer")
+        public void shouldCancelDeleteCustomer() {
+            String cpf = "035.056.850-20";
+            createCustomerForTest("não mim remova", cpf);
+
+            DeleteCustomerModal modal = customerPage.clickDeleteCustomerButton(cpf);
+
+            customerPage = modal.clickCancelButton();
+
+            assertThat(customerPage.isCustomerListed(cpf)).isTrue();
+        }
+
     }
 
     private void createCustomerForTest(String name, String cpf) {
