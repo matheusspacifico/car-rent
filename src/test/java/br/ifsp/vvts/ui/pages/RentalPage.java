@@ -16,9 +16,6 @@ public class RentalPage extends BasePage {
 
     private final By cellStatus = By.cssSelector(".mat-column-status");
     private final By buttonReturn = By.cssSelector("button[mattooltip='Retornar Veiculo']");
-    private final By buttonDelete = By.cssSelector("button[mattooltip='Excluir']");
-
-    private final By confirmDialogButton = By.cssSelector("mat-dialog-container button[color='primary']");
 
     public RentalPage(WebDriver driver) {
         super(driver);
@@ -59,11 +56,6 @@ public class RentalPage extends BasePage {
         btn.click();
     }
 
-    public void clickDeleteFirstRental() {
-        WebElement firstRow = waitForElement(tableRows);
-        WebElement btn = firstRow.findElement(buttonDelete);
-        btn.click();
-    }
 
     public String getFirstRowStatus() {
         if (isNoRentalsMessageVisible()) return "";
@@ -79,17 +71,4 @@ public class RentalPage extends BasePage {
         return btn.isEnabled() && !classes.contains("disabled-button");
     }
 
-    public void confirmModalAction() {
-        waitForElement(confirmDialogButton);
-        click(confirmDialogButton);
-        wait.until(d -> driver.findElements(confirmDialogButton).isEmpty());
-    }
-
-    public boolean isDeleteButtonEnabledInFirstRow() {
-        if (isNoRentalsMessageVisible()) return false;
-        WebElement firstRow = waitForElement(tableRows);
-        WebElement btn = firstRow.findElement(buttonDelete);
-        String classes = btn.getAttribute("class");
-        return btn.isEnabled() && !classes.contains("disabled") && !classes.contains("mat-button-disabled");
-    }
 }
