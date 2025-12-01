@@ -11,6 +11,7 @@ import br.ifsp.vvts.infra.persistence.repository.CustomerRepository;
 import br.ifsp.vvts.infra.persistence.repository.RentalRepository;
 import br.ifsp.vvts.ui.pages.RentalFormPage;
 import br.ifsp.vvts.ui.pages.RentalPage;
+import br.ifsp.vvts.ui.pages.ReturnRentalPage;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -96,17 +97,37 @@ public class RentalPageTest extends AuthenticatedBaseUiTest {
             assertThat(rentalPage.getRentalCount()).isEqualTo(1);
             assertThat(rentalPage.getFirstRowStatus()).isEqualTo("Ativo");
         }
+
+        @Test
+        @DisplayName("Should perform rental return flow successfully")
+        public void shouldReturnCarSuccessfully() {
+            createRentalInDb();
+            driver.navigate().refresh();
+            rentalPage = new RentalPage(driver);
+
+            rentalPage.clickReturnFirstRental();
+            ReturnRentalPage returnPage = new ReturnRentalPage(driver);
+
+            returnPage.setReturnDate("12/12/2025");
+            returnPage.setDamageRequired(false);
+            returnPage.setCleaningRequired(true);
+
+            rentalPage = returnPage.clickRegisterReturn();
+
+            assertThat(rentalPage.getFirstRowStatus()).isEqualTo("Finalizado");
+            assertThat(rentalPage.isReturnButtonEnabledInFirstRow()).isFalse();
+        }
     }
 
-    private RentalEntity createRentalInDb(RentalStatus status) {
-        return rentalRepository.save(new RentalEntity(
+    private void createRentalInDb() {
+        rentalRepository.save(new RentalEntity(
                 null,
                 savedCustomer,
                 savedCar,
                 LocalDate.now(),
                 LocalDate.now().plusDays(5),
                 BigDecimal.valueOf(500.00),
-                status
+                RentalStatus.ACTIVE
         ));
     }
 }
