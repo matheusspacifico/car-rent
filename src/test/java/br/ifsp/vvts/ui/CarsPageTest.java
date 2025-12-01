@@ -1,20 +1,31 @@
 package br.ifsp.vvts.ui;
 
+import br.ifsp.vvts.infra.persistence.repository.CarRepository;
 import br.ifsp.vvts.ui.pages.CarFormPage;
 import br.ifsp.vvts.ui.pages.CarsPage;
 import br.ifsp.vvts.ui.pages.DeleteCarModal;
 import org.junit.jupiter.api.*;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Tag("UiTest")
 public class CarsPageTest extends AuthenticatedBaseUiTest {
+
+    @Autowired
+    private CarRepository carsRepository;
+
     private CarsPage carsPage;
 
     @BeforeEach
     public void navigateToCarsPage() {
         navigateTo("/cars");
         carsPage = new CarsPage(driver);
+    }
+
+    @AfterEach
+    public void tearDown() {
+        carsRepository.deleteAll();
     }
 
     @Nested

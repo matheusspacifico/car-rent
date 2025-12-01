@@ -1,14 +1,19 @@
 package br.ifsp.vvts.ui;
 
+import br.ifsp.vvts.infra.persistence.repository.CustomerRepository;
 import br.ifsp.vvts.ui.pages.CustomerFormPage;
 import br.ifsp.vvts.ui.pages.CustomerPage;
 import br.ifsp.vvts.ui.pages.DeleteCustomerModal;
 import org.junit.jupiter.api.*;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Tag("UiTest")
 public class CustomerPageTest extends AuthenticatedBaseUiTest {
+
+    @Autowired
+    private CustomerRepository customerRepository;
 
     private CustomerPage customerPage;
 
@@ -16,6 +21,11 @@ public class CustomerPageTest extends AuthenticatedBaseUiTest {
     public void navigateToCustomerPage() {
         navigateTo("/customers");
         customerPage = new CustomerPage(driver);
+    }
+
+    @AfterEach
+    public void tearDown() {
+        customerRepository.deleteAll();
     }
 
     @Nested
@@ -57,7 +67,7 @@ public class CustomerPageTest extends AuthenticatedBaseUiTest {
         @DisplayName("Should cancel process to create a new customer")
         public void shouldCancelCreateCustomer() {
             String name = faker.name().fullName();
-            String cpf = "035.056.850-20";
+            String cpf = "995.527.810-27";
 
             CustomerFormPage form = customerPage.clickAddCustomerButton();
             form.fillForm(name, cpf);
@@ -70,7 +80,7 @@ public class CustomerPageTest extends AuthenticatedBaseUiTest {
         @Test
         @DisplayName("Should edit an existing customer")
         public void shouldEditCustomer() {
-            String cpf = "035.056.850-20";
+            String cpf = "044.240.980-01";
             createCustomerForTest("Old Name", cpf);
 
             CustomerFormPage form = customerPage.clickEditCustomerButton(cpf);
@@ -88,7 +98,7 @@ public class CustomerPageTest extends AuthenticatedBaseUiTest {
         @Test
         @DisplayName("Should cancel process to edit an existing customer")
         public void shouldCancelEditCustomer() {
-            String cpf = "035.056.850-20";
+            String cpf = "896.159.910-07";
             String originalName = "Original Name";
             createCustomerForTest(originalName, cpf);
 
@@ -103,7 +113,7 @@ public class CustomerPageTest extends AuthenticatedBaseUiTest {
         @Test
         @DisplayName("Should delete existing customer")
         public void shouldDeleteCustomer() {
-            String cpf = "035.056.850-20";
+            String cpf = "774.217.830-32";
             createCustomerForTest("mim remova", cpf);
 
             DeleteCustomerModal modal = customerPage.clickDeleteCustomerButton(cpf);
@@ -118,7 +128,7 @@ public class CustomerPageTest extends AuthenticatedBaseUiTest {
         @Test
         @DisplayName("Should cancel process to delete existing customer")
         public void shouldCancelDeleteCustomer() {
-            String cpf = "035.056.850-20";
+            String cpf = "397.889.700-87";
             createCustomerForTest("não mim remova", cpf);
 
             DeleteCustomerModal modal = customerPage.clickDeleteCustomerButton(cpf);
