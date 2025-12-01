@@ -65,5 +65,45 @@ public class CustomerPageTest extends AuthenticatedBaseUiTest {
             assertThat(customerPage.isCustomerListed(cpf)).isFalse();
             assertThat(customerPage.checkCustomerRowData(name, cpf)).isFalse();
         }
+
+        @Test
+        @DisplayName("Should edit an existing customer")
+        public void shouldEditCustomer() {
+            String cpf = "035.056.850-20";
+            createCustomerForTest("Old Name", cpf);
+
+            CustomerFormPage form = customerPage.clickEditCustomerButton(cpf);
+
+            assertThat(form.getFormTitle()).isEqualTo("Editar Cliente");
+
+            String newName = faker.name().fullName() + " Edited";
+            form.fillForm(newName, cpf);
+
+            customerPage = form.clickSubmit();
+
+            assertThat(customerPage.checkCustomerRowData(newName, cpf)).isTrue();
+        }
+
+        @Test
+        @DisplayName("Should cancel process to edit an existing customer")
+        public void shouldCancelEditCustomer() {
+            String cpf = "035.056.850-20";
+            String originalName = "Original Name";
+            createCustomerForTest(originalName, cpf);
+
+            CustomerFormPage form = customerPage.clickEditCustomerButton(cpf);
+
+            form.setName("Should Not Save This Name");
+            customerPage = form.clickCancel();
+
+            assertThat(customerPage.checkCustomerRowData(originalName, cpf)).isTrue();
+        }
     }
+
+    private void createCustomerForTest(String name, String cpf) {
+        CustomerFormPage form = customerPage.clickAddCustomerButton();
+        form.fillForm(name, cpf);
+        customerPage = form.clickSubmit();
+    }
+
 }
